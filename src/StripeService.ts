@@ -74,4 +74,26 @@ export class StripeService {
     }
     return event;
   }
+
+  /**
+ * SANITY CHECK: Verifies connection to Stripe.
+ * Call this in your app's startup or admin dashboard to ensure keys are valid.
+ */
+async verifyConnection() {
+  try {
+    // This makes a lightweight request to Stripe to verify the API key
+    await this.stripe.balance.retrieve();
+    return { 
+        status: 'connected', 
+        apiVersion: this.config.requiredStripeVersion,
+        appVersion: this.config.appVersion 
+    };
+  } catch (error: any) {
+    return { 
+        status: 'error', 
+        message: error.message 
+    };
+  }
+}
+
 }
