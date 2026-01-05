@@ -3,7 +3,7 @@ node_modules/
 jspm_packages/
 
 # --- Build / Output ---
-dist/
+# dist/
 build/
 *.tsbuildinfo
 
