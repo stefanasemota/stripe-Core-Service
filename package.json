@@ -1,6 +1,6 @@
 {
   "name": "@stefan/stripe-core-service",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A portable, config-driven Stripe integration layer for Next.js and Firebase environments.",
   "main": "dist/StripeService.js",
   "types": "dist/StripeService.d.ts",
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "tsc",    
+    "build": "tsc",
     "release": "npm test && npm run build && npm version patch && git push origin master --tags",
     "prepare": "husky install"
   },
