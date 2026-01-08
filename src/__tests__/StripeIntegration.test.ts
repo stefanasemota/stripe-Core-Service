@@ -7,9 +7,14 @@ import packageJson from "../../package.json";
 
 // 1. Load your secrets from the local .env.test file
 dotenv.config({ path: path.resolve(__dirname, "../../.env.test") });
+jest.setTimeout(20000);
 
 describe("Stripe Live Integration Tests", () => {
   const apiKey = process.env.STRIPE_SECRET_KEY;
+
+  // Only run if the key exists AND is not the placeholder used for CI
+  const isRealKey = apiKey && !apiKey.includes("mock_key_for_ci");
+  const itIfRealKey = isRealKey ? it : it.skip;
 
   // Only run these tests if an API key is actually present in .env.test
   const itIfKey = apiKey ? it : it.skip;
@@ -28,15 +33,18 @@ describe("Stripe Live Integration Tests", () => {
    * TEST: API Connectivity
    * Verifies that the 'sk_test' key is valid and can reach Stripe servers.
    */
-  itIfKey("should successfully connect to live Stripe servers", async () => {
-    const result = await service.verifyConnection();
+  itIfRealKey(
+    "should successfully connect to live Stripe servers",
+    async () => {
+      const result = await service.verifyConnection();
 
-    expect(result.status).toBe("connected");
-    expect(result.appVersion).toBe(packageJson.version);
-    console.log(
-      `✅ Live Connection Verified for Sabi Lib v${result.appVersion}`
-    );
-  });
+      expect(result.status).toBe("connected");
+      expect(result.appVersion).toBe(packageJson.version);
+      console.log(
+        `✅ Live Connection Verified for Sabi Lib v${result.appVersion}`
+      );
+    }
+  );
 
   /**
    * TEST: Product Retrieval
