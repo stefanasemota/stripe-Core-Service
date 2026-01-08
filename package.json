@@ -8,9 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "npx jest --coverage",
     "build": "tsc",
-    "release": "npm test && npm run build && npm version patch && git push origin master --tags",
+    "release": "npm test && npm run build && npm version patch && git push origin dev --tags",
     "prepare": "husky install"
   },
   "keywords": [],
