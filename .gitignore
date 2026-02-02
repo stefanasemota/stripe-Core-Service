@@ -47,3 +47,7 @@ Desktop.ini
 # --- Firebase (If applicable to the local env) ---
 .firebase/
 firebase-debug.log*
+
+# --- Agentic ---
+.agent/
+!.antigravity/
