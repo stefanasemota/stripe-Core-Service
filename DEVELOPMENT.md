@@ -1,47 +1,49 @@
-# ⚡️ Developer Guide (Post-Holiday Stefan Edition)
+# 🛠 Developer Guide
 
-Welcome back! Here is how you get productive in 5 minutes.
+This document is intended for maintainers of the `@stefanasemota/stripe-core-service`. It covers the architecture, testing standards, and the release process.
 
-## 🏗 Architecture (Onion)
+## 🏗 Architecture (Onion Pattern)
 
-We use **Onion Architecture** to separate high-level logic from Stripe details.
-- **`src/core/`**: PURE interfaces/models. No imports from `stripe`.
-- **`src/infrastructure/`**: The dirty work. Direct calls to `stripe` SDK.
-- **`StripeService.ts`**: The Facade. It just delegates calls to Infrastructure.
+The library follows the **Onion Architecture** to decouple core business logic from the infrastructure (Stripe SDK).
 
-**The Golden Rules:**
-1.  **75-Line Rule**: No file > 75 lines. Split it up.
-2.  **No Direct Imports**: `Core` never imports `Stripe`.
+- **`src/core/`**: Contains pure TypeScript interfaces and models. No external dependencies (specifically no `stripe` SDK imports).
+- **`src/infrastructure/`**: Contains adapters that implement core interfaces using the `stripe` SDK.
+- **`StripeService.ts`**: The public Facade that aggregates and delegates to the internal adapters.
+
+### The Golden Rules
+1.  **75-Line Rule**: No file should exceed 75 lines of logic. If a file grows too large, split it into smaller, focused components.
+2.  **Infrastructure Isolation**: The `Core` layer must never import from `stripe`. If you need a Stripe type in the Core, define a domain model or interface instead.
 
 ## 🧪 Testing (Vitest)
 
-We enforce **>80% Coverage**. If you break it, CI breaks.
+We enforce high quality through strict testing requirements.
+
+- **Standard**: >80% Branch & Statement coverage required for all new code.
+- **Current State**: 100% Coverage across all layers.
 
 ### Quick Commands
-| Command | Action |
+| Command | Description |
 | :--- | :--- |
-| `npm test` | Runs all tests (Fast). |
-| `npm run test:coverage` | Runs tests + Generates Coverage Report. |
+| `npm test` | Runs the test suite once (Fast mode). |
+| `npm run test:coverage` | Runs tests and generates an LCOV report in `coverage/`. |
 
-### How to maintain coverage
-- If you add a mocked method in an Adapter, **add a test** in `src/__tests__`.
-- If you add a branch (if/else), **cover both sides**.
+### Maintaining Quality
+- Always mock the `stripe` SDK in Infrastructure tests.
+- Mock the adapters in Facade tests to ensure isolation.
+- Use `vi.fn()` for dependency injection verification.
 
-## 🚢 The /ship Command
+## 🚢 Publishing & Shipping
 
-When you are ready to deploy:
+We use a formalized `ship` command to ensure quality before code hits the repository.
 
-1.  **Commit your changes**.
-2.  Run the release script:
+### The `npm run ship` Workflow
+When running `npm run ship`, the following happens automatically:
+1.  **Verification**: Runs `npm test` to ensure no regressions.
+2.  **Build**: Runs `npm run build` to verify TypeScript compilation and generate the `dist/` folder.
+3.  **Push**: Pushes the current branch and all tags to `origin main`.
 
-```bash
-npm run release
-```
+> [!IMPORTANT]
+> Ensure your Git stage is clean before shipping. The command will fail if tests or build steps do not pass.
 
-**What it does:**
-1.  Runs `npm test` (Must pass).
-2.  Runs `npm run build` (Must verify types).
-3.  Bumps version (Patch).
-4.  Tags and Pushes to `origin dev`.
-
-**Go forth and code!** 🚀
+## 📄 Licensing & Philosophy
+Build for the culture. Sabi for the world. Keep the core pure. 🚀

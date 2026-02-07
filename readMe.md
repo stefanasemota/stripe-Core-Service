@@ -1,93 +1,59 @@
-# 🔐 @stefan/stripe-core-service (v1.0.7)
+# 🔐 @stefanasemota/stripe-core-service
 
-A strictly-typed, modular Stripe integration layer designed for Next.js applications using Firebase. This library follows the **Onion Architecture** to decouple core business logic from the Stripe infrastructure.
+[![npm version](https://img.shields.io/npm/v/@stefanasemota/stripe-core-service.svg)](https://www.npmjs.com/package/@stefanasemota/stripe-core-service)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Vitest Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](#-local-development--testing)
+[![Architecture: Onion](https://img.shields.io/badge/Architecture-Onion-orange.svg)](./DEVELOPMENT.md)
+
+A strictly-typed, modular Stripe integration layer designed for Next.js applications. This library follows the **Onion Architecture** to decouple core business logic from the Stripe infrastructure, ensuring it remains portable and easy to maintain.
 
 ## ✅ Features
 
-- **Onion Architecture**: Core domain logic is isolated from the Stripe SDK, ensuring better maintainability and testability.
-- **Strict Availability**: 75-line limit per file enforced for readability.
-- **High Quality**: >80% Test Coverage (Branch & Statement) using **Vitest**.
-- **Sanity Checks**: `verifyConnection()` method validates API keys on startup.
-- **Dynamic Product Fetching**: `fetchActiveProducts()` retrieves live plans directly from your Dashboard.
-- **Webhook Security**: Robust signature validation with custom fulfillment callbacks.
-
-## 💻 Architecture
-
-The project is structured into layers:
-
-1.  **Core (`src/core`)**: Interfaces and Models (e.g., `IPaymentService`, `Product`). pure TypeScript, no dependencies.
-2.  **Infrastructure (`src/infrastructure`)**: Adapters implementing the core interfaces using the `stripe` SDK.
-3.  **Facade (`StripeService.ts`)**: The entry point that ties everything together.
-
-## 💻 Minimum Requirements
-
-- **Next.js**: ^14.0.0
-- **Node.js**: ^20.0.0 (LTS)
-- **Stripe SDK**: ^14.0.0
-- **Vitest**: (for testing)
+- **Onion Architecture**: Core domain logic is isolated from the Stripe SDK.
+- **Strict Readability**: Enforced 75-line limit per file.
+- **Battle-Tested**: 100% Test Coverage using **Vitest**.
+- **Dynamic Pricing**: `fetchActiveProducts()` retrieves live plans directly from your Stripe Dashboard.
+- **Webhook Security**: Robust signature validation with fulfillment callbacks.
 
 ## 📦 Installation
 
+### Via NPM
 ```bash
-npm install github:stefanasemota/stripe-Core-Service#v1.0.7
+npm install @stefanasemota/stripe-core-service
 ```
 
-## 🛠 Local Development & Testing
-
-This project uses **Vitest** for unit testing.
-
-### 1. Setup Environment
-Create a `.env.test` file (Git-ignored):
-```text
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-TEST_PRICE_ID=price_...
-```
-
-### 2. Running Tests
-To run the full test suite (Standard):
+### Via GitHub (Development)
 ```bash
-npm test
+npm install github:stefanasemota/stripe-Core-Service#main
 ```
 
-To run with coverage reports:
-```bash
-npm run test:coverage
-```
-*Current Coverage: 100% Statement, 100% Branch*
+## 🚀 Quick Start
 
-## 📚 Library API Reference
-
-### Initialization
+### 1. Initialization
 ```typescript
-import { StripeService } from '@stefan/stripe-core-service';
+import { StripeService } from '@stefanasemota/stripe-core-service';
 
 export const stripeService = new StripeService({
   apiKey: process.env.STRIPE_SECRET_KEY!,
   webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-  appVersion: '1.0.7',
-  requiredStripeVersion: '2025-01-27.acacia'
+  appVersion: '1.0.11',
+  requiredStripeVersion: '2025-01-27.acacia' // Matches your Stripe Dashboard
 });
 ```
 
-### Core Interfaces
-Advanced users can use the interfaces directly for dependency injection:
-
+### 2. Creating a Checkout Session
 ```typescript
-import { IProductService, IPaymentService } from '@stefan/stripe-core-service/core';
-// Implement your own adapter or mock for testing
+const { url } = await stripeService.createCheckoutSession(
+  userId,
+  'price_123...', 
+  'https://your-app.com/success',
+  'https://your-app.com/cancel'
+);
+
+if (url) window.location.assign(url);
 ```
 
-| Method | Returns | Description |
-| :--- | :--- | :--- |
-| `verifyConnection()` | `Promise<Object>` | Verifies connectivity. |
-| `fetchActiveProducts()` | `Promise<Product[]>` | Fetches active products. |
-| `createCheckoutSession(...)` | `Promise<{url: string}>` | Creates subscription checkout. |
-| `handleWebhook(...)` | `Promise<Event>` | Validates and routes webhooks. |
-
-## 🚀 Implementation Example (Next.js)
-
-### Webhook Route
+### 3. Handling Webhooks (Next.js Example)
 ```typescript
 export async function POST(req: Request) {
   const body = await req.text();
@@ -95,7 +61,8 @@ export async function POST(req: Request) {
 
   try {
     await stripeService.handleWebhook(body, signature, async (userId, session) => {
-      console.log(`Fulfilling order for User: ${userId}`);
+        // Logic to fulfill the order (e.g. update Firebase/DB)
+        console.log(`Fulfilling order for User: ${userId}`);
     });
     return new Response('OK', { status: 200 });
   } catch (err) {
@@ -104,5 +71,22 @@ export async function POST(req: Request) {
 }
 ```
 
+## 🛠 Local Development & Testing
+
+We use **Vitest** for all unit testing.
+
+1.  **Setup Environment**: Create a `.env.test` file.
+2.  **Run Tests**: `npm test`
+3.  **Check Coverage**: `npm run test:coverage`
+
+## 💻 Architecture
+
+The project is structured into three distinct layers:
+1.  **Core**: Interfaces and Models (Pure TS).
+2.  **Infrastructure**: Stripe-specific adapters.
+3.  **Facade**: The `StripeService` entry point.
+
+For more details, see [DEVELOPMENT.md](./DEVELOPMENT.md).
+
 ## 📄 License
-MIT — Build for the culture. Sabi for the world.
+ISC — Build for the culture. Sabi for the world.

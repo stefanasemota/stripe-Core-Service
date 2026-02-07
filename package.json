@@ -12,7 +12,11 @@
     "test:coverage": "vitest run --coverage",
     "build": "tsc",
     "ship": "git push origin main --tags",
-    "prepare": "npm run build && (test -d .git && npx husky install || true)"
+    "prepare": "npm run build && (test -d .git && npx husky install || true)",
+    "release:patch": "npm version patch && git push origin main --tags",
+    "release:minor": "npm version minor && git push origin main --tags",
+    "release:major": "npm version major && git push origin main --tags",
+    "postversion": "echo \"Successfully bumped to $npm_package_version\""
   },
   "keywords": [],
   "author": "Stefan Asemota",
