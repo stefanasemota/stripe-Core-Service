@@ -1,5 +1,5 @@
 {
-  "name": "@stefan/stripe-core-service",
+  "name": "@stefanasemota/stripe-core-service",
   "version": "1.0.9",
   "description": "A portable, config-driven Stripe integration layer for Next.js and Firebase environments.",
   "main": "dist/StripeService.js",
