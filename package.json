@@ -1,6 +1,6 @@
 {
   "name": "@stefanasemota/stripe-core-service",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A portable, config-driven Stripe integration layer for Next.js and Firebase environments.",
   "main": "dist/StripeService.js",
   "types": "dist/StripeService.d.ts",
