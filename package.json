@@ -12,7 +12,7 @@
     "test:coverage": "vitest run --coverage",
     "build": "tsc",
     "release": "npm test && npm run build && npm version patch && git push origin dev --tags",
-    "prepare": "husky install"
+    "prepare": "npm run build && (test -d .git && npx husky install || true)"
   },
   "keywords": [],
   "author": "Stefan Asemota",
